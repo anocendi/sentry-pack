@@ -13,14 +13,14 @@ http {
       1 $binary_remote_addr;
   }
   limit_req_zone $limit_key zone=LimitZoneAPI:10m rate=200r/s;
-  
+
   map $http_upgrade $connection_upgrade {
     default upgrade;
     ''      close;
   }
 
   upstream prep-api {
-    server prep.us-east-1.consul:9000;
+    server ${PREP_URL}:9000;
   }
 
   log_format api_log 'Proxy IP: $remote_addr | Client IP: $http_x_forwarded_for | Time: $time_local' ' Request: "$request" | Status: $status | Bytes Sent: $body_bytes_sent | Referrer: "$http_referer"' ' User Agent: "$http_user_agent"';
@@ -56,7 +56,7 @@ stream {
   limit_conn_zone $binary_remote_addr zone=LimitZoneGRPC:10m;
 
   upstream prep-grpc {
-    server prep.us-east-1.consul:7100;
+    server ${PREP_URL}:7100;
   }
 
   log_format grpc_log 'Client IP: $remote_addr | Time: $time_local';

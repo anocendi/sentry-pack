@@ -1,0 +1,19 @@
+version: '3'
+services:
+  nginx:
+    image: 'nginx:1.17.3'
+    container_name: 'nginx'
+    volumes:
+      - ./nginx/nginx.conf.tpl:/etc/nginx/nginx.conf.tpl
+      - ./nginx/access_lists/:/etc/nginx/access_lists/
+      - ./nginx/log/:/var/log/nginx/
+    ports:
+      - 9000:9000
+      - 7100:7100
+    restart: always
+    environment:
+      PREP_URL: ${PREP_URL}
+    command: /bin/bash -c "envsubst '\$PREP_URL' < /etc/nginx/nginx.conf.tpl > /etc/nginx/nginx.conf && nginx -g 'daemon off;'"
+# This command above doesn't work from docker-compose up -d but does work with `docker-compose run nginx`???
+# This is so we can have a dynamic DNS record associated with the instance provided in user-data
+# Not worth more work for now to get right
